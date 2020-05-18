@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+    body{
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        grid-template-rows: calc(100vh - 20px);
+        margin:0;
+        padding:10px;
+        box-sizing: border-box;
+    }
+    form{
+        display: grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 300px 1fr 40px 40px;
+        grid-gap:20px;
+    }
+    input[type="number"]{
+        border:none;
+        border-bottom:1px solid #1294D9;
+    }
+    button{
+        background: #1294D9;
+        color:#fff;
+        border-radius: 40px;
+        border:none;
+    }
+    .group{
+        background:#1294D9;
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-around;
+        display: grid;
+    }
+    .member{
+        color:#fff;
+        text-align: center;
+        font-size: 1.1em;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #rect{
+        box-sizing: border-box;
+        padding:100px;
+    }
+    #rect .inner{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap:20px;
+        height:100%;
+    }
+    #rect div{
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+<form name="profile" id="profile">
+<div>
+    <code>
+        織田信長(0)<br>
+        明智光秀(0)<br>
+        豊臣秀吉(0)<br>
+        徳川家康(0)<br>
+        石田三成(0)<br>
+        ペリー(1)<br>
+        ロックフェラー(1)<br>
+        ロスチャイルド(1)<br>
+        天照大神(2)<br>
+        須佐之男(2)<br>
+        月詠(2)<br>
+    </code>
+    といった具合に番号を降ると同じ番号の人が均等にグループに分かれてくれます。
+</div>
+<textarea name="members" id="members_" placeholder="名前(半角数字)">
+織田信長(0)
+明智光秀(0)
+豊臣秀吉(0)
+徳川家康(0)
+石田三成(0)
+ペリー(1)
+ロックフェラー(1)
+ロスチャイルド(1)
+天照大神(2)
+須佐之男(2)
+月詠(2)
+</textarea>
+<input type="number" id="counter" placeholder="グループ数">
+<button>振り分け</button>
+</form>
+<div id="rect">
+<div class="inner"></div>
+</div>
+<script type="text/javascript">
+document.querySelector("#profile").onsubmit=(e)=>{
+    e.preventDefault();
+    let members=[];
+    document.querySelector("#members_").value.split("\n").forEach(t=>{
+        let name=t.split("(")[0];
+        let grade=Number(t.split("(")[1].substring(0,1));
+        if(!members[grade]){
+            members[grade]=[];
+        }
+        members[grade].push(name);
+    });
+    let c=document.querySelector("#counter").value;
+    members.forEach((m,j,a)=>{
+        for(let i=0;i<m.length;i++){
+            let r=Math.floor(Math.random()*m.length);
+            let t=m[i];
+            a[j][i]=m[r];
+            a[j][r]=t;
+        }
+    });
+    let i=0;
+    let group=new Array(c);
+    for(let i=0;i<c;i++){
+        group[i]=[];
+    }
+    members.forEach((m,i,a)=>{
+        while(m.length>0){
+            let e=m.pop();
+            group[i%c].push(e);
+            i++;
+        }
+    });
+    let clean=document.querySelector("#rect .inner").cloneNode(false);
+    document.querySelector("#rect").replaceChild(clean,document.querySelector("#rect .inner"));
+    group.forEach(g=>{
+        let t=document.createElement("div");
+        t.classList.add("group")
+        g.forEach(m=>{
+            t.innerHTML+=("<div class=\"member\">"+m+"</div>");
+        });
+        document.querySelector("#rect .inner").appendChild(t);
+    });
+    return false;
+}
+</script>
+</body>
+</html>
